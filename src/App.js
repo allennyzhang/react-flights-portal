@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlightSearch } from './view';
+import { FlightPage } from './view';
 import store from './store';
 import { Provider } from 'react-redux';
 import { theme } from './theme';
@@ -9,7 +9,7 @@ function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <Provider store={store}>
-        <FlightSearch />
+        <FlightPage />
       </Provider>
     </MuiThemeProvider>
   );

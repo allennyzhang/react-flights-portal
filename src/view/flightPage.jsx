@@ -16,7 +16,7 @@ const styles = (theme) =>
         ...tableStyles(theme)
     });
 
-class FlightSearchImp extends React.PureComponent {
+class FlightPageImp extends React.PureComponent {
 
     state = {
         pageSize: 10,
@@ -119,6 +119,6 @@ const mapDispatchToProps = dispatch => ({
     fetchFlightAsyn: url => dispatch(Actions.fetchFlightAsyn(url))
 });
 
-export const FlightSearch = connect(
+export const FlightPage = connect(
     mapStateToProps, mapDispatchToProps
-)(withStyles(styles)(FlightSearchImp));
+)(withStyles(styles)(FlightPageImp));

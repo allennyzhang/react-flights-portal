@@ -1,1 +1,1 @@
-export { FlightSearch } from './flightSearch';
+export { FlightPage } from './flightPage';
