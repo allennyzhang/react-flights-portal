@@ -7,7 +7,7 @@ const initialState =
     isLoading: false,
 }
 
-export const FlightReducer = (state = initialState, action) => {
+export const flightReducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionTypes.FETCH_FLIGHT: {
             return {

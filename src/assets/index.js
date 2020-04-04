@@ -1,0 +1,1 @@
+export { tableStyles } from './tableStyles'

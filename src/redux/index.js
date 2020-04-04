@@ -1,2 +1,2 @@
-export { FlightReducer } from './flightReducer';
+export { flightReducer } from './flightReducer';
 export { Actions } from './actions';
