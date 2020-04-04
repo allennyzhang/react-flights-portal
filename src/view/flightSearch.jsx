@@ -9,6 +9,7 @@ import {
 import { Actions, } from '../redux';
 import { tableStyles } from '../assets';
 import clsx from 'clsx';
+import { Pagination } from '../components';
 
 const styles = (theme) =>
     createStyles({
@@ -17,9 +18,26 @@ const styles = (theme) =>
 
 class FlightSearchImp extends React.PureComponent {
 
+    state = {
+        pageSize: 10,
+        totalHits: 0,
+        currPageIdx: 0,
+    };
+
     handleFlightSearch = () => {
         this.props.fetchFlightAsyn('https://tokigames-challenge.herokuapp.com/api/flights/business');
     }
+
+    handlePageChange = async currPageIdx => {
+        this.setState({ currPageIdx })
+        await this.props.fetchFlightAsyn('https://tokigames-challenge.herokuapp.com/api/flights/business');
+    }
+
+    handlePageSizeChange = async pageSize => {
+        this.setState({ pageSize, currPageIdx: 0 })
+        await this.props.fetchFlightAsyn('https://tokigames-challenge.herokuapp.com/api/flights/business');
+    }
+
 
     render() {
 
@@ -31,7 +49,7 @@ class FlightSearchImp extends React.PureComponent {
                 <Button variant="contained" color="primary" onClick={this.handleFlightSearch} >
                     fetch flight
                     </Button>
-                {isLoading && <p>Loading…</p>}
+                <div className={isLoading ? 'loading' : ''}></div>
 
                 {hasError && <p>Sorry! There was an error loading the items</p>}
 
@@ -42,7 +60,7 @@ class FlightSearchImp extends React.PureComponent {
                                 <TableRow>
                                     <TableCell className={clsx(classes.tableCell, classes.tableHeadCell)}>
                                         Departure
-							        </TableCell>
+                                    </TableCell>
                                     <TableCell className={clsx(classes.tableCell, classes.tableHeadCell)}>
                                         Arrival
 							        </TableCell>
@@ -78,6 +96,14 @@ class FlightSearchImp extends React.PureComponent {
                                 </TableFooter>
                             }
                         </Table>
+                        <Pagination
+                            pageSize={this.state.pageSize}
+                            totalHits={flights.length}
+                            currentPage={this.state.currPageIdx + 1}
+                            handleChangePage={this.handlePageChange}
+                            onPageSizeChange={this.handlePageSizeChange}
+                            pageSizeOptions={[10, 20, 50, 100]}
+                        />
                     </div>
                 }
             </div >
