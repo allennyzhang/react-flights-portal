@@ -1,10 +1,10 @@
 import React from "react";
 import {
-    Grid, TextField, withStyles, Button,
+    Grid, TextField, withStyles, Button, createStyles
 } from "@material-ui/core";
 import { Actions, } from '../redux';
 import { connect } from "react-redux";
-// import clsx from 'clsx';
+import clsx from 'clsx';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     KeyboardDatePicker,
@@ -14,9 +14,19 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-const styles = () => {
-
-}
+const styles = (theme) => createStyles({
+    formControl: {
+        width: '180px',
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1)
+    },
+    classType: {
+        marginBottom: '-7px'
+    },
+    searchButton: {
+        marginBottom: -theme.spacing(2)
+    }
+});
 
 class FlightSearchImp extends React.Component {
 
@@ -24,8 +34,8 @@ class FlightSearchImp extends React.Component {
         classType: '',
         departure: '',
         arrival: '',
-        departureTime: new Date(),
-        arrivalTime: new Date()
+        departureTime: null,
+        arrivalTime: null
     };
 
     handleFlightSearch = () => {
@@ -41,84 +51,80 @@ class FlightSearchImp extends React.Component {
 
     handleChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
-        // console.log(`${e.target.name}:${e.target.value}`)
     }
 
     render() {
         const { classes } = this.props;
         return (
-            <Grid container justify="flex-start" alignItems='center' direction='row' className={classes.searchMargin} >
-                <Grid item xs={6} sm={4} md={2}>
-                    <TextField
-                        id="departure"
-                        name="departure"
-                        margin="normal"
-                        variant="outlined"
-                        onChange={this.handleChange}
-                        value={this.state.departure}
-                        // error={ErrorMsgKey !== ''}
-                        InputLabelProps={{
-                            shrink: true
-                        }}
-                        label="FROM"
-                        // label={ErrorMsgKey ? ErrorMsgKey : "FROM"}
-                        autoFocus
-                    />
-                </Grid>
-                <Grid item xs={6} sm={4} md={2}>
-                    <TextField
-                        id="arrival"
-                        name="arrival"
-                        margin="normal"
-                        variant="outlined"
-                        onChange={this.handleChange}
-                        value={this.state.arrival}
-                        // error={ErrorMsgKey !== ''}
-                        InputLabelProps={{
-                            shrink: true
-                        }}
-                        label="TO"
-                        // label={ErrorMsgKey ? ErrorMsgKey : "FROM"}
-                        autoFocus
-                    />
-                </Grid>
-                <Grid item xs={6} sm={4} md={2}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
+            <Grid container justify="flex-start" alignItems='center' direction='row'>
+                <Grid item >
+                    <FormControl className={classes.formControl}>
+                        <TextField
                             id="departure"
-                            disableToolbar
-                            variant="inline"
-                            format="MM/dd/yyyy"
+                            name="departure"
                             margin="normal"
-                            label="Departure Date"
-                            value={this.state.departureTime}
-                            onChange={(date) => this.setState({ departureTime: date })}
-                            KeyboardButtonProps={{
-                                'aria-label': 'Departure Date',
+                            variant="outlined"
+                            onChange={this.handleChange}
+                            value={this.state.departure}
+                            InputLabelProps={{
+                                shrink: true
                             }}
+                            label="FROM"
+                            autoFocus
                         />
-                    </MuiPickersUtilsProvider>
-
+                    </FormControl>
                 </Grid>
-                <Grid item xs={6} sm={4} md={2}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            disableToolbar
-                            variant="inline"
-                            format="MM/dd/yyyy"
+                <Grid item >
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            id="arrival"
+                            name="arrival"
                             margin="normal"
-                            id="arrivalTime"
-                            label="Arrival Date"
-                            value={this.state.arrivalTime}
-                            onChange={(date) => this.setState({ arrivalTime: date })}
-                            KeyboardButtonProps={{
-                                'aria-label': 'Arrival Date',
+                            variant="outlined"
+                            onChange={this.handleChange}
+                            value={this.state.arrival}
+                            InputLabelProps={{
+                                shrink: true
                             }}
+                            label="TO"
+                            autoFocus
                         />
-                    </MuiPickersUtilsProvider>
+                    </FormControl>
                 </Grid>
-                <Grid item xs={6} sm={4} md={2}>
-                    <FormControl variant="filled" className={classes.formControl}>
+                <Grid item >
+                    <FormControl className={classes.formControl}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils} >
+                            <KeyboardDatePicker
+                                id="departure"
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                label="Departure Date"
+                                value={this.state.departureTime}
+                                onChange={(date) => this.setState({ departureTime: date })}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </FormControl>
+                </Grid>
+                <Grid item >
+                    <FormControl className={classes.formControl}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils} >
+                            <KeyboardDatePicker
+                                disableToolbar
+                                variant="inline"
+                                format="MM/dd/yyyy"
+                                margin="normal"
+                                id="arrivalTime"
+                                label="Arrival Date"
+                                value={this.state.arrivalTime}
+                                onChange={(date) => this.setState({ arrivalTime: date })}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </FormControl>
+                </Grid>
+                <Grid item >
+                    <FormControl className={clsx(classes.formControl, classes.classType)}>
                         <InputLabel htmlFor="classType">Class</InputLabel>
                         <Select
                             fullWidth
@@ -131,11 +137,10 @@ class FlightSearchImp extends React.Component {
                             <option value="Business">Business</option>
                         </Select>
                     </FormControl>
-                </Grid>
-
-                <Grid item xs={6} sm={4} md={2} >
+                </Grid >
+                <Grid item className={classes.searchButton}>
                     <Button variant="contained" color="primary" onClick={this.handleFlightSearch} >
-                        Search Flights
+                        Search
                     </Button>
                 </Grid>
             </Grid >

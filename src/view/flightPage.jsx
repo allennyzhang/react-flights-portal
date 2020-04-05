@@ -1,13 +1,22 @@
 import React from "react";
 import { connect } from "react-redux";
 import { FlightSearch, FlightResult } from '../components';
+import { withStyles, createStyles } from "@material-ui/core";
 
-class FlightPageImp extends React.PureComponent {
+const styles = (theme) => createStyles({
+    body: {
+        paddingTop: theme.spacing(2),
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3)
+    },
+});
+
+class FlightPageImp extends React.Component {
 
     render() {
         const { hasError, isLoading } = this.props.flightState;
         return (
-            <div>
+            <div className={this.props.classes.body}>
                 <FlightSearch />
                 <FlightResult />
                 <div className={isLoading ? 'loading' : ''}></div>
@@ -23,4 +32,4 @@ const mapStateToProps = state => ({
 
 export const FlightPage = connect(
     mapStateToProps
-)(FlightPageImp);
+)(withStyles(styles)(FlightPageImp));

@@ -10,7 +10,7 @@ const initialState =
 
 export const flightReducer = (state = initialState, action) => {
     switch (action.type) {
-        case ActionTypes.FETCH_FLIGHT: {
+        case ActionTypes.SET_FLIGHT: {
             return {
                 ...state, flights: action.payload
             };

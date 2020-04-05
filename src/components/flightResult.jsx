@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
     createStyles,
     Table, TableBody, TableCell,
-    TableHead, TableRow, TableFooter,
+    TableHead, TableRow,
     Typography, withStyles
 } from '@material-ui/core'
 import { Actions, } from '../redux';
@@ -13,6 +13,12 @@ import { Pagination } from '../components';
 
 const styles = (theme) =>
     createStyles({
+        footer: {
+            color: theme.palette.primary.main,
+            textAlign: 'center',
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2)
+        },
         ...tableStyles(theme)
     });
 
@@ -70,7 +76,7 @@ class FlightResultImp extends React.PureComponent {
                                 Arrival Time
 							        </TableCell>
                             <TableCell className={clsx(classes.tableCell, classes.tableHeadCell)}>
-                                Class Type
+                                Class
 							        </TableCell>
                         </TableRow>
                     </TableHead>
@@ -89,18 +95,13 @@ class FlightResultImp extends React.PureComponent {
                             })}
                         </TableBody>
                     }
-                    {pageRecords.length === 0 && !isLoading &&
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell>
-                                    <Typography variant="body2" gutterBottom>
-                                        No items found!
-                                            </Typography>
-                                </TableCell>
-                            </TableRow>
-                        </TableFooter>
-                    }
+
                 </Table>
+                {pageRecords.length === 0 && !isLoading &&
+                    <Typography variant="body1" className={classes.footer}  >
+                        No records found!
+                    </Typography>
+                }
                 <Pagination
                     pageSize={this.state.pageSize}
                     totalHits={flights.length}

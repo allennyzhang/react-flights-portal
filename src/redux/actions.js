@@ -1,15 +1,16 @@
 import axios from 'axios';
+import moment from 'moment';
 
 export const ActionTypes = {
-    FETCH_FLIGHT: 'FETCH_FLIGHT',
+    SET_FLIGHT: 'SET_FLIGHT',
     SET_HAS_ERROR: 'SET_HAS_ERROR',
     SET_IS_LOADING: 'SET_IS_LOADING',
     SET_PAGE_RECORDS: 'SET_PAGE_RECORDS',
     RESET_FLIGHS: 'RESET_FLIGHS',
 };
 
-const fetchFlight = payload => ({
-    type: ActionTypes.FETCH_FLIGHT,
+const setFlight = payload => ({
+    type: ActionTypes.SET_FLIGHT,
     payload
 })
 
@@ -52,21 +53,7 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
                     }
                 })
 
-                if (departure) {
-                    flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
-
-                    if (arrival) {
-                        flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
-                    }
-
-                    if (departureTime) {
-                        flights = flights.filter(x => x.departureTime === departureTime);
-                    }
-
-                    if (arrivalTime) {
-                        flights = flights.filter(x => x.arrivalTime === arrivalTime);
-                    }
-                }
+                flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
 
                 const pageSize = 10;
                 const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
@@ -74,7 +61,7 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
                     dispatch(setPageRecords(pageRecords));
                 else
                     dispatch(resetFlights(pageRecords));
-                dispatch(fetchFlight(flights));
+                dispatch(setFlight(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {
@@ -104,21 +91,7 @@ export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arriva
                     }
                 })
 
-                if (departure) {
-                    flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
-
-                    if (arrival) {
-                        flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
-                    }
-
-                    if (departureTime) {
-                        flights = flights.filter(x => x.departureTime === departureTime);
-                    }
-
-                    if (arrivalTime) {
-                        flights = flights.filter(x => x.arrivalTime === arrivalTime);
-                    }
-                }
+                flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
 
                 const pageSize = 10;
                 const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
@@ -126,7 +99,7 @@ export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arriva
                     dispatch(setPageRecords(pageRecords));
                 else
                     dispatch(resetFlights(pageRecords));
-                dispatch(fetchFlight(flights));
+                dispatch(setFlight(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {
@@ -134,6 +107,26 @@ export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arriva
                 dispatch(setHasError(true));
             });
     };
+}
+
+const filterFlights = (flights, departure, arrival, departureTime, arrivalTime) => {
+    if (departure) {
+        flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
+    }
+    if (arrival) {
+        flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
+    }
+    if (departureTime) {
+        flights = flights.filter(x => getFullDateWithFormat(x.departureTime) === getFullDateWithFormat(departureTime));
+    }
+    if (arrivalTime) {
+        flights = flights.filter(x => getFullDateWithFormat(x.arrivalTime) === getFullDateWithFormat(arrivalTime));
+    }
+    return flights;
+}
+
+const getFullDateWithFormat = (datetime) => {
+    return moment(datetime).format('YYYY-MM-DD');
 }
 
 export const Actions = {
