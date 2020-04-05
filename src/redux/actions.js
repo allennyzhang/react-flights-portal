@@ -4,6 +4,7 @@ export const ActionTypes = {
     FETCH_FLIGHT: 'FETCH_FLIGHT',
     SET_HAS_ERROR: 'SET_HAS_ERROR',
     SET_IS_LOADING: 'SET_IS_LOADING',
+    SET_PAGE_RECORDS: 'SET_PAGE_RECORDS',
 };
 
 const fetchFlight = payload => ({
@@ -18,6 +19,11 @@ const setHasError = payload => ({
 
 const setIsLoading = payload => ({
     type: ActionTypes.SET_IS_LOADING,
+    payload
+})
+
+const setPageRecords = payload => ({
+    type: ActionTypes.SET_PAGE_RECORDS,
     payload
 })
 
@@ -60,4 +66,5 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
 
 export const Actions = {
     fetchFlightAsyn,
+    setPageRecords,
 };
