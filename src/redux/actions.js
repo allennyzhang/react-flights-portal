@@ -5,6 +5,7 @@ export const ActionTypes = {
     SET_HAS_ERROR: 'SET_HAS_ERROR',
     SET_IS_LOADING: 'SET_IS_LOADING',
     SET_PAGE_RECORDS: 'SET_PAGE_RECORDS',
+    RESET_FLIGHS: 'RESET_FLIGHS',
 };
 
 const fetchFlight = payload => ({
@@ -25,6 +26,10 @@ const setIsLoading = payload => ({
 const setPageRecords = payload => ({
     type: ActionTypes.SET_PAGE_RECORDS,
     payload
+})
+
+const resetFlights = () => ({
+    type: ActionTypes.RESET_FLIGHS
 })
 
 export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, type) {
@@ -55,10 +60,14 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
                     }
                 }
 
+                const pageSize = 10;
+                const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
+                dispatch(setPageRecords(pageRecords));
                 dispatch(fetchFlight(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {
+                dispatch(setIsLoading(false));
                 dispatch(setHasError(true));
             });
     };
@@ -67,4 +76,5 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
 export const Actions = {
     fetchFlightAsyn,
     setPageRecords,
+    resetFlights,
 };

@@ -12,7 +12,7 @@ export const flightReducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionTypes.FETCH_FLIGHT: {
             return {
-                ...state, flights: action.payload, pageRecords: action.payload
+                ...state, flights: action.payload
             };
         }
         case ActionTypes.SET_IS_LOADING: {
@@ -28,6 +28,11 @@ export const flightReducer = (state = initialState, action) => {
         case ActionTypes.SET_PAGE_RECORDS: {
             return {
                 ...state, pageRecords: action.payload
+            };
+        }
+        case ActionTypes.RESET_FLIGHS: {
+            return {
+                ...state, flights: [], pageRecords: []
             };
         }
         default:

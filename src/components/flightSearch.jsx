@@ -29,6 +29,7 @@ class FlightSearchImp extends React.Component {
     };
 
     handleFlightSearch = () => {
+        this.props.resetFlights();
         const { classType, departure, arrival, departureTime, arrivalTime } = this.state;
         this.props.fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, classType);
     }
@@ -143,6 +144,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+    resetFlights: () => dispatch(Actions.resetFlights()),
     fetchFlightAsyn: (departure, arrival, departureTime, arrivalTime, classType) =>
         dispatch(Actions.fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, classType))
 });

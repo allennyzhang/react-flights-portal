@@ -20,28 +20,33 @@ class FlightResultImp extends React.PureComponent {
 
     state = {
         pageSize: 10,
+        pageIndex: 0,
         totalHits: 0,
-        currPageIdx: 0,
     };
 
     getpageRecords = () => {
+        let pageRecords = [];
+        const { pageSize, pageIndex } = this.state;
         const allRecords = this.props.flightState.flights;
         this.setState({ totalHits: allRecords.length }, () => {
-            const firstIndex = (this.state.currPageIdx - 1) * this.state.pageSize;
-            const lastIndex = (this.state.currPageIdx * this.state.pageSize) >
-                this.state.totalHits ? this.state.totalHits : (this.state.currPageIdx * this.state.pageSize);
+            if (pageIndex === 0) {
+                pageRecords = allRecords.slice(0, pageSize);
+            } else {
+                const firstIndex = (pageIndex - 1) * pageSize;
+                const lastIndex = (pageIndex * pageSize) > this.state.totalHits ? this.state.totalHits : (pageIndex * pageSize);
 
-            const records = allRecords.slice(firstIndex, lastIndex);
-            this.props.setPageRecords(records);
+                pageRecords = allRecords.slice(firstIndex, lastIndex);
+            }
+            this.props.setPageRecords(pageRecords);
         });
     }
 
     handlePageChange = page => {
-        this.setState({ currPageIdx: page.selected + 1 }, () => { this.getpageRecords(); });
+        this.setState({ pageIndex: page.selected }, () => { this.getpageRecords(); });
     }
 
     handlePageSizeChange = value => {
-        this.setState({ currPageIdx: 1, pageSize: value }, () => { this.getpageRecords(); });
+        this.setState({ pageIndex: 0, pageSize: value }, () => { this.getpageRecords(); });
     }
 
     render() {
@@ -97,7 +102,7 @@ class FlightResultImp extends React.PureComponent {
                         <Pagination
                             pageSize={this.state.pageSize}
                             totalHits={flights.length}
-                            currentPage={this.state.currPageIdx + 1}
+                            currentPage={this.state.pageIndex + 1}
                             handleChangePage={this.handlePageChange}
                             onPageSizeChange={this.handlePageSizeChange}
                             pageSizeOptions={[10, 20, 50, 100]}
