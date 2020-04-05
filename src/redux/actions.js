@@ -21,13 +21,35 @@ const setIsLoading = payload => ({
     payload
 })
 
-export function fetchFlightAsyn(url) {
+export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, type) {
+    const urlCheap = "https://tokigames-challenge.herokuapp.com/api/flights/cheap";
+    const urlBusiness = "https://tokigames-challenge.herokuapp.com/api/flights/business";
+    const url = type === "cheap" ? urlCheap : urlBusiness;
+
     return (dispatch) => {
         dispatch(setIsLoading(true));
 
         axios.get(url)
             .then(resp => {
-                dispatch(fetchFlight(resp.data));
+                let flights = resp.data.data;
+
+                if (departure) {
+                    flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
+
+                    if (arrival) {
+                        flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
+                    }
+
+                    if (arrival) {
+                        flights = flights.filter(x => x.departureTime === departureTime);
+                    }
+
+                    if (arrival) {
+                        flights = flights.filter(x => x.arrivalTime === arrivalTime);
+                    }
+                }
+
+                dispatch(fetchFlight(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {

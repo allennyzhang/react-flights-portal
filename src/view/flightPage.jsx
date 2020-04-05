@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-    Button, createStyles,
+    createStyles,
     Table, TableBody, TableCell,
     TableHead, TableRow, TableFooter,
     Typography, withStyles
@@ -9,7 +9,7 @@ import {
 import { Actions, } from '../redux';
 import { tableStyles } from '../assets';
 import clsx from 'clsx';
-import { Pagination } from '../components';
+import { Pagination, FlightSearch } from '../components';
 
 const styles = (theme) =>
     createStyles({
@@ -23,10 +23,6 @@ class FlightPageImp extends React.PureComponent {
         totalHits: 0,
         currPageIdx: 0,
     };
-
-    handleFlightSearch = () => {
-        this.props.fetchFlightAsyn('https://tokigames-challenge.herokuapp.com/api/flights/business');
-    }
 
     handlePageChange = async currPageIdx => {
         this.setState({ currPageIdx })
@@ -46,9 +42,8 @@ class FlightPageImp extends React.PureComponent {
 
         return (
             <div>
-                <Button variant="contained" color="primary" onClick={this.handleFlightSearch} >
-                    fetch flight
-                    </Button>
+                <FlightSearch />
+
                 <div className={isLoading ? 'loading' : ''}></div>
 
                 {hasError && <p>Sorry! There was an error loading the items</p>}
