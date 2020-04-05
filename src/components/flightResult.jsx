@@ -26,26 +26,24 @@ class FlightResultImp extends React.PureComponent {
 
     getpageRecords = () => {
         let pageRecords = [];
-        const { pageSize, pageIndex } = this.state;
         const allRecords = this.props.flightState.flights;
         this.setState({ totalHits: allRecords.length }, () => {
-            if (pageIndex === 0) {
-                pageRecords = allRecords.slice(0, pageSize);
-            } else {
-                const firstIndex = (pageIndex - 1) * pageSize;
-                const lastIndex = (pageIndex * pageSize) > this.state.totalHits ? this.state.totalHits : (pageIndex * pageSize);
+            const { pageSize, pageIndex, totalHits } = this.state;
+            const firstIndex = pageIndex * pageSize;
+            const lastIndex = ((pageIndex + 1) * pageSize) > totalHits ? totalHits : ((pageIndex + 1) * pageSize);
+            pageRecords = allRecords.slice(firstIndex, lastIndex);
 
-                pageRecords = allRecords.slice(firstIndex, lastIndex);
-            }
             this.props.setPageRecords(pageRecords);
         });
     }
 
     handlePageChange = page => {
+        console.log(`page.selected:${page.selected}`)
         this.setState({ pageIndex: page.selected }, () => { this.getpageRecords(); });
     }
 
     handlePageSizeChange = value => {
+        console.log(`pageIndex:${value};pageSize:${value}`)
         this.setState({ pageIndex: 0, pageSize: value }, () => { this.getpageRecords(); });
     }
 

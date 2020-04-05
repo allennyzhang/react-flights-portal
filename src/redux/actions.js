@@ -42,7 +42,16 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
 
         axios.get(url)
             .then(resp => {
-                let flights = resp.data.data;
+                const tempFlights = resp.data.data;
+
+                let flights = tempFlights.map(flight => {
+                    return {
+                        departure: flight.departure,
+                        arrival: flight.arrival,
+                        departureTime: new Date(flight.departureTime).toLocaleString(),
+                        arrivalTime: new Date(flight.arrivalTime).toLocaleString(),
+                    }
+                })
 
                 if (departure) {
                     flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
