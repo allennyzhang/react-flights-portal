@@ -24,14 +24,19 @@ class FlightSearchImp extends React.Component {
         classType: '',
         departure: '',
         arrival: '',
-        departureTime: new Date('2014-08-18T21:11:54'),
-        arrivalTime: new Date('2014-08-18T21:11:54')
+        departureTime: new Date(),
+        arrivalTime: new Date()
     };
 
     handleFlightSearch = () => {
         this.props.resetFlights();
         const { classType, departure, arrival, departureTime, arrivalTime } = this.state;
-        this.props.fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, classType);
+
+        if (classType === "Business") {
+            this.props.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime);
+        } else {
+            this.props.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime);
+        }
     }
 
     handleChange = (e) => {
@@ -122,9 +127,8 @@ class FlightSearchImp extends React.Component {
                             onChange={this.handleChange}
                             inputProps={{ id: 'classType', name: 'classType' }}
                         >
-                            <option aria-label="None" value="" />
-                            <option value="cheap">Economy</option>
-                            <option value="business">Business</option>
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -145,8 +149,11 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     resetFlights: () => dispatch(Actions.resetFlights()),
-    fetchFlightAsyn: (departure, arrival, departureTime, arrivalTime, classType) =>
-        dispatch(Actions.fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, classType))
+    setPageRecords: pageRecords => dispatch(Actions.setPageRecords(pageRecords)),
+    fetchEconomyFlightAsyn: (departure, arrival, departureTime, arrivalTime) =>
+        dispatch(Actions.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime)),
+    fetchBusinessFlightAsyn: (departure, arrival, departureTime, arrivalTime) =>
+        dispatch(Actions.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime))
 });
 
 export const FlightSearch = connect(

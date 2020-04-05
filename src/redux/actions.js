@@ -32,10 +32,8 @@ const resetFlights = () => ({
     type: ActionTypes.RESET_FLIGHS
 })
 
-export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, type) {
-    const urlCheap = "https://tokigames-challenge.herokuapp.com/api/flights/cheap";
-    const urlBusiness = "https://tokigames-challenge.herokuapp.com/api/flights/business";
-    const url = type === "cheap" ? urlCheap : urlBusiness;
+export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime) {
+    const url = "https://tokigames-challenge.herokuapp.com/api/flights/business";
 
     return (dispatch) => {
         dispatch(setIsLoading(true));
@@ -50,6 +48,7 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
                         arrival: flight.arrival,
                         departureTime: new Date(flight.departureTime).toLocaleString(),
                         arrivalTime: new Date(flight.arrivalTime).toLocaleString(),
+                        classType: 'Business'
                     }
                 })
 
@@ -60,18 +59,73 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
                         flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
                     }
 
-                    if (arrival) {
+                    if (departureTime) {
                         flights = flights.filter(x => x.departureTime === departureTime);
                     }
 
-                    if (arrival) {
+                    if (arrivalTime) {
                         flights = flights.filter(x => x.arrivalTime === arrivalTime);
                     }
                 }
 
                 const pageSize = 10;
                 const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
-                dispatch(setPageRecords(pageRecords));
+                if (pageRecords.length > 0)
+                    dispatch(setPageRecords(pageRecords));
+                else
+                    dispatch(resetFlights(pageRecords));
+                dispatch(fetchFlight(flights));
+                dispatch(setIsLoading(false));
+            })
+            .catch(err => {
+                dispatch(setIsLoading(false));
+                dispatch(setHasError(true));
+            });
+    };
+}
+
+export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime) {
+    const url = "https://tokigames-challenge.herokuapp.com/api/flights/cheap";
+
+    return (dispatch) => {
+        dispatch(setIsLoading(true));
+
+        axios.get(url)
+            .then(resp => {
+                const tempFlights = resp.data.data;
+
+                let flights = tempFlights.map(flight => {
+                    return {
+                        departure: flight.route.split('-')[0],
+                        arrival: flight.route.split('-')[1],
+                        departureTime: new Date(flight.departure).toLocaleString(),
+                        arrivalTime: new Date(flight.arrival).toLocaleString(),
+                        classType: 'Economy'
+                    }
+                })
+
+                if (departure) {
+                    flights = flights.filter(x => x.departure.toLowerCase().trim() === departure.toLowerCase().trim());
+
+                    if (arrival) {
+                        flights = flights.filter(x => x.arrival.toLowerCase().trim() === arrival.toLowerCase().trim());
+                    }
+
+                    if (departureTime) {
+                        flights = flights.filter(x => x.departureTime === departureTime);
+                    }
+
+                    if (arrivalTime) {
+                        flights = flights.filter(x => x.arrivalTime === arrivalTime);
+                    }
+                }
+
+                const pageSize = 10;
+                const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
+                if (pageRecords.length > 0)
+                    dispatch(setPageRecords(pageRecords));
+                else
+                    dispatch(resetFlights(pageRecords));
                 dispatch(fetchFlight(flights));
                 dispatch(setIsLoading(false));
             })
@@ -83,7 +137,8 @@ export function fetchFlightAsyn(departure, arrival, departureTime, arrivalTime, 
 }
 
 export const Actions = {
-    fetchFlightAsyn,
+    fetchEconomyFlightAsyn,
+    fetchBusinessFlightAsyn,
     setPageRecords,
     resetFlights,
 };
