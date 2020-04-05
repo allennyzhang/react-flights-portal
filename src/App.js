@@ -4,12 +4,20 @@ import store from './store';
 import { Provider } from 'react-redux';
 import { theme } from './theme';
 import { MuiThemeProvider } from '@material-ui/core/styles';
+import { createBrowserHistory } from 'history';
+import { Route, Router, Switch } from 'react-router-dom';
+
+const hist = createBrowserHistory();
 
 function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <Provider store={store}>
-        <FlightPage />
+        <Router history={hist}>
+          <Switch>
+            <Route path={"/"} component={FlightPage} />
+          </Switch>
+        </Router>
       </Provider>
     </MuiThemeProvider>
   );

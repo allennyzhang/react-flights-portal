@@ -95,7 +95,7 @@ class FlightSearchImp extends React.Component {
                     <FormControl className={classes.formControl}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils} >
                             <KeyboardDatePicker
-                                id="departure"
+                                id="departureTime"
                                 disableToolbar
                                 variant="inline"
                                 format="MM/dd/yyyy"
