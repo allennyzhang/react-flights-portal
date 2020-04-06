@@ -6,6 +6,8 @@ const initialState =
     pageRecords: [],
     hasError: false,
     isLoading: false,
+    pageSize: 10,
+    pageIndex: 0,
 }
 
 export const flightReducer = (state = initialState, action) => {
@@ -28,6 +30,16 @@ export const flightReducer = (state = initialState, action) => {
         case ActionTypes.SET_PAGE_RECORDS: {
             return {
                 ...state, pageRecords: action.payload
+            };
+        }
+        case ActionTypes.SET_PAGE_INDEX: {
+            return {
+                ...state, pageIndex: action.payload
+            };
+        }
+        case ActionTypes.SET_PAGE_SIZE: {
+            return {
+                ...state, pageIndex: 0, pageSize: action.payload
             };
         }
         case ActionTypes.RESET_FLIGHS: {

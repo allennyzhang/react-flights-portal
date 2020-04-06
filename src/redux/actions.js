@@ -6,6 +6,8 @@ export const ActionTypes = {
     SET_HAS_ERROR: 'SET_HAS_ERROR',
     SET_IS_LOADING: 'SET_IS_LOADING',
     SET_PAGE_RECORDS: 'SET_PAGE_RECORDS',
+    SET_PAGE_SIZE: 'SET_PAGE_SIZE',
+    SET_PAGE_INDEX: 'SET_PAGE_INDEX',
     RESET_FLIGHS: 'RESET_FLIGHS',
 };
 
@@ -29,11 +31,21 @@ const setPageRecords = payload => ({
     payload
 })
 
+const setPageIndex = payload => ({
+    type: ActionTypes.SET_PAGE_INDEX,
+    payload
+})
+
+const setPageSize = payload => ({
+    type: ActionTypes.SET_PAGE_SIZE,
+    payload
+})
+
 const resetFlights = () => ({
     type: ActionTypes.RESET_FLIGHS
 })
 
-export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime) {
+export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize) {
     const url = "https://tokigames-challenge.herokuapp.com/api/flights/business";
 
     return (dispatch) => {
@@ -54,9 +66,8 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
                 })
 
                 flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
-
-                const pageSize = 10;
                 const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
+
                 if (pageRecords.length > 0)
                     dispatch(setPageRecords(pageRecords));
                 else
@@ -71,7 +82,7 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
     };
 }
 
-export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime) {
+export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize) {
     const url = "https://tokigames-challenge.herokuapp.com/api/flights/cheap";
 
     return (dispatch) => {
@@ -92,9 +103,8 @@ export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arriva
                 })
 
                 flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
-
-                const pageSize = 10;
                 const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
+
                 if (pageRecords.length > 0)
                     dispatch(setPageRecords(pageRecords));
                 else
@@ -133,5 +143,7 @@ export const Actions = {
     fetchEconomyFlightAsyn,
     fetchBusinessFlightAsyn,
     setPageRecords,
+    setPageIndex,
+    setPageSize,
     resetFlights,
 };

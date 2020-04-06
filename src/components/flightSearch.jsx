@@ -40,17 +40,23 @@ class FlightSearchImp extends React.Component {
 
     handleFlightSearch = () => {
         this.props.resetFlights();
+        this.props.setPageIndex(0);
+
+        const { pageSize } = this.props.flightState;
         const { classType, departure, arrival, departureTime, arrivalTime } = this.state;
 
         if (classType === "Business") {
-            this.props.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime);
+            this.props.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize);
         } else {
-            this.props.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime);
+            this.props.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize);
         }
     }
 
     handleChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
+        if (e.target.type === "select-one") {
+            this.handleFlightSearch();
+        }
     }
 
     render() {
@@ -153,12 +159,13 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+    setPageIndex: pageIndex => dispatch(Actions.setPageIndex(pageIndex)),
     resetFlights: () => dispatch(Actions.resetFlights()),
     setPageRecords: pageRecords => dispatch(Actions.setPageRecords(pageRecords)),
-    fetchEconomyFlightAsyn: (departure, arrival, departureTime, arrivalTime) =>
-        dispatch(Actions.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime)),
-    fetchBusinessFlightAsyn: (departure, arrival, departureTime, arrivalTime) =>
-        dispatch(Actions.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime))
+    fetchEconomyFlightAsyn: (departure, arrival, departureTime, arrivalTime, pageSize) =>
+        dispatch(Actions.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize)),
+    fetchBusinessFlightAsyn: (departure, arrival, departureTime, arrivalTime, pageSize) =>
+        dispatch(Actions.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize))
 });
 
 export const FlightSearch = connect(

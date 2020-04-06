@@ -25,38 +25,28 @@ const styles = (theme) =>
 class FlightResultImp extends React.PureComponent {
 
     state = {
-        pageSize: 10,
-        pageIndex: 0,
-        totalHits: 0,
-        orderByField: "departure",
         sortDirection: "desc",
+        orderByField: "departure",
     };
 
-    getpageRecords = () => {
-        const allRecords = this.props.flightState.flights;
-        this.setState({ totalHits: allRecords.length }, () => {
-            this.setPageRecords(allRecords);
-        });
-    }
-
-    setPageRecords = (allRecords) => {
+    getPageRecords = (allRecords, pageIndex, pageSize) => {
         const totalHits = allRecords.length;
-        const { pageSize, pageIndex, } = this.state;
         const firstIndex = pageIndex * pageSize;
         const lastIndex = ((pageIndex + 1) * pageSize) > totalHits ? totalHits : ((pageIndex + 1) * pageSize);
         const pageRecords = allRecords.slice(firstIndex, lastIndex);
 
+        this.props.setPageSize(pageSize);
+        this.props.setPageIndex(pageIndex);
         this.props.setPageRecords(pageRecords);
     }
 
-    handlePageChange = page => {
-        console.log(`page.selected:${page.selected}`)
-        this.setState({ pageIndex: page.selected }, () => { this.getpageRecords(); });
+    handlePageIndexChange = page => {
+        const { pageSize, flights } = this.props.flightState;
+        this.getPageRecords(flights, page.selected, pageSize);
     }
 
-    handlePageSizeChange = value => {
-        console.log(`pageIndex:${value};pageSize:${value}`)
-        this.setState({ pageIndex: 0, pageSize: value }, () => { this.getpageRecords(); });
+    handlePageSizeChange = pageSize => {
+        this.getPageRecords(this.props.flightState.flights, 0, pageSize);
     }
 
     handleSorting = (orderByField, changeDirection = true) => {
@@ -71,7 +61,8 @@ class FlightResultImp extends React.PureComponent {
 
     sortResults = () => {
         let sortedRecords = this.props.flightState.pageRecords;;
-        const flights = this.props.flightState.flights;
+        const { pageIndex, pageSize, flights } = this.props.flightState;
+
         switch (this.state.orderByField) {
             case 'departure':
                 sortedRecords = flights.slice().sort((a, b) => this.sortString(a.departure, b.departure));
@@ -91,7 +82,7 @@ class FlightResultImp extends React.PureComponent {
         if (this.state.sortDirection === 'asc') {
             sortedRecords = sortedRecords.reverse();
         }
-        this.setPageRecords(sortedRecords);
+        this.getPageRecords(sortedRecords, pageIndex, pageSize);
     }
 
     sortString = (a, b) => {
@@ -109,7 +100,7 @@ class FlightResultImp extends React.PureComponent {
     render() {
 
         const { classes } = this.props;
-        const { flights, pageRecords, isLoading } = this.props.flightState;
+        const { flights, pageRecords, isLoading, pageIndex, pageSize } = this.props.flightState;
 
         return (
             <div className={classes.tableResponsive}>
@@ -176,10 +167,10 @@ class FlightResultImp extends React.PureComponent {
                     </Typography>
                 }
                 <Pagination
-                    pageSize={this.state.pageSize}
+                    pageSize={pageSize}
                     totalHits={flights.length}
-                    currentPage={this.state.pageIndex + 1}
-                    handleChangePage={this.handlePageChange}
+                    currentPage={pageIndex + 1}
+                    handleChangePage={this.handlePageIndexChange}
                     onPageSizeChange={this.handlePageSizeChange}
                     pageSizeOptions={[10, 20, 50, 100]}
                 />
@@ -194,6 +185,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setPageRecords: pageRecords => dispatch(Actions.setPageRecords(pageRecords)),
+    setPageIndex: pageIndex => dispatch(Actions.setPageIndex(pageIndex)),
+    setPageSize: pageSize => dispatch(Actions.setPageSize(pageSize)),
 });
 
 export const FlightResult = connect(
