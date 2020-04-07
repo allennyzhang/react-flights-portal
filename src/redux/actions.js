@@ -2,7 +2,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 export const ActionTypes = {
-    SET_FLIGHT: 'SET_FLIGHT',
+    SET_FLIGHTS: 'SET_FLIGHTS',
     SET_HAS_ERROR: 'SET_HAS_ERROR',
     SET_IS_LOADING: 'SET_IS_LOADING',
     SET_PAGE_RECORDS: 'SET_PAGE_RECORDS',
@@ -11,8 +11,8 @@ export const ActionTypes = {
     RESET_FLIGHS: 'RESET_FLIGHS',
 };
 
-const setFlight = payload => ({
-    type: ActionTypes.SET_FLIGHT,
+const setFlights = payload => ({
+    type: ActionTypes.SET_FLIGHTS,
     payload
 })
 
@@ -45,17 +45,27 @@ const resetFlights = () => ({
     type: ActionTypes.RESET_FLIGHS
 })
 
-export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize) {
+export const fetchAllFlightsAsyn = (departure, arrival, departureTime, arrivalTime) => {
+    return dispatch => {
+        dispatch(setIsLoading(true));
+        return Promise.all([
+            dispatch(fetchEconomyFlightsAsyn(departure, arrival, departureTime, arrivalTime)),
+            dispatch(fetchBusinessFlightsAsyn(departure, arrival, departureTime, arrivalTime)),
+        ]).then(
+            () => dispatch(setIsLoading(false))
+        )
+    }
+}
+
+export const fetchBusinessFlightsAsyn = (departure, arrival, departureTime, arrivalTime) => {
     const url = "https://tokigames-challenge.herokuapp.com/api/flights/business";
 
-    return (dispatch) => {
+    return dispatch => {
         dispatch(setIsLoading(true));
 
-        axios.get(url)
+        return axios.get(url)
             .then(resp => {
-                const tempFlights = resp.data.data;
-
-                let flights = tempFlights.map(flight => {
+                let flights = resp.data.data.map(flight => {
                     return {
                         departure: flight.departure,
                         arrival: flight.arrival,
@@ -66,13 +76,7 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
                 })
 
                 flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
-                const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
-
-                if (pageRecords.length > 0)
-                    dispatch(setPageRecords(pageRecords));
-                else
-                    dispatch(resetFlights(pageRecords));
-                dispatch(setFlight(flights));
+                dispatch(setFlights(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {
@@ -82,17 +86,15 @@ export function fetchBusinessFlightAsyn(departure, arrival, departureTime, arriv
     };
 }
 
-export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize) {
+export const fetchEconomyFlightsAsyn = (departure, arrival, departureTime, arrivalTime) => {
     const url = "https://tokigames-challenge.herokuapp.com/api/flights/cheap";
 
-    return (dispatch) => {
+    return dispatch => {
         dispatch(setIsLoading(true));
 
-        axios.get(url)
+        return axios.get(url)
             .then(resp => {
-                const tempFlights = resp.data.data;
-
-                let flights = tempFlights.map(flight => {
+                let flights = resp.data.data.map(flight => {
                     return {
                         departure: flight.route.split('-')[0],
                         arrival: flight.route.split('-')[1],
@@ -103,13 +105,7 @@ export function fetchEconomyFlightAsyn(departure, arrival, departureTime, arriva
                 })
 
                 flights = filterFlights(flights, departure, arrival, departureTime, arrivalTime)
-                const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
-
-                if (pageRecords.length > 0)
-                    dispatch(setPageRecords(pageRecords));
-                else
-                    dispatch(resetFlights(pageRecords));
-                dispatch(setFlight(flights));
+                dispatch(setFlights(flights));
                 dispatch(setIsLoading(false));
             })
             .catch(err => {
@@ -140,8 +136,10 @@ const getFullDateWithFormat = (datetime) => {
 }
 
 export const Actions = {
-    fetchEconomyFlightAsyn,
-    fetchBusinessFlightAsyn,
+    fetchAllFlightsAsyn,
+    fetchEconomyFlightsAsyn,
+    fetchBusinessFlightsAsyn,
+    setIsLoading,
     setPageRecords,
     setPageIndex,
     setPageSize,

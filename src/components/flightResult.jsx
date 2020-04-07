@@ -35,9 +35,9 @@ class FlightResultImp extends React.PureComponent {
         const lastIndex = ((pageIndex + 1) * pageSize) > totalHits ? totalHits : ((pageIndex + 1) * pageSize);
         const pageRecords = allRecords.slice(firstIndex, lastIndex);
 
-        this.props.setPageSize(pageSize);
-        this.props.setPageIndex(pageIndex);
-        this.props.setPageRecords(pageRecords);
+        this.props.dispatch(Actions.setPageSize(pageSize));
+        this.props.dispatch(Actions.setPageIndex(pageIndex));
+        this.props.dispatch(Actions.setPageRecords(pageRecords));
     }
 
     handlePageIndexChange = page => {
@@ -75,6 +75,9 @@ class FlightResultImp extends React.PureComponent {
                 break;
             case 'arrivalTime':
                 sortedRecords = flights.slice().sort((a, b) => this.sortString(a.arrivalTime, b.arrivalTime));
+                break;
+            case 'classType':
+                sortedRecords = flights.slice().sort((a, b) => this.sortString(a.classType, b.classType));
                 break;
             default:
                 return sortedRecords;
@@ -140,8 +143,13 @@ class FlightResultImp extends React.PureComponent {
 								</TableSortLabel>
                             </TableCell>
                             <TableCell className={clsx(classes.tableCell, classes.tableHeadCell)}>
-                                Class
-							</TableCell>
+                                <TableSortLabel
+                                    active={this.state.orderByField === 'classType'}
+                                    direction={this.sortLabelDirection()}
+                                    onClick={() => this.handleSorting('classType')}>
+                                    Class
+								</TableSortLabel>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     {pageRecords.length > 0 && !isLoading &&
@@ -183,12 +191,6 @@ const mapStateToProps = state => ({
     flightState: state.flightState
 });
 
-const mapDispatchToProps = dispatch => ({
-    setPageRecords: pageRecords => dispatch(Actions.setPageRecords(pageRecords)),
-    setPageIndex: pageIndex => dispatch(Actions.setPageIndex(pageIndex)),
-    setPageSize: pageSize => dispatch(Actions.setPageSize(pageSize)),
-});
-
 export const FlightResult = connect(
-    mapStateToProps, mapDispatchToProps
+    mapStateToProps
 )(withStyles(styles)(FlightResultImp));

@@ -12,9 +12,9 @@ const initialState =
 
 export const flightReducer = (state = initialState, action) => {
     switch (action.type) {
-        case ActionTypes.SET_FLIGHT: {
+        case ActionTypes.SET_FLIGHTS: {
             return {
-                ...state, flights: action.payload
+                ...state, flights: [...state.flights, ...action.payload]
             };
         }
         case ActionTypes.SET_IS_LOADING: {
@@ -44,7 +44,7 @@ export const flightReducer = (state = initialState, action) => {
         }
         case ActionTypes.RESET_FLIGHS: {
             return {
-                ...state, flights: [], pageRecords: []
+                ...initialState
             };
         }
         default:

@@ -39,24 +39,36 @@ class FlightSearchImp extends React.Component {
     };
 
     handleFlightSearch = () => {
-        this.props.resetFlights();
-        this.props.setPageIndex(0);
+        this.props.dispatch(Actions.resetFlights());
 
-        const { pageSize } = this.props.flightState;
         const { classType, departure, arrival, departureTime, arrivalTime } = this.state;
 
         if (classType === "Business") {
-            this.props.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize);
+            this.props.dispatch(Actions.fetchBusinessFlightsAsyn(departure, arrival, departureTime, arrivalTime))
+                .then(() => this.setPageRecords())
+        } else if (classType === "Economy") {
+            this.props.dispatch(Actions.fetchEconomyFlightsAsyn(departure, arrival, departureTime, arrivalTime))
+                .then(() => this.setPageRecords());
         } else {
-            this.props.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize);
+            this.props.dispatch(Actions.fetchAllFlightsAsyn(departure, arrival, departureTime, arrivalTime))
+                .then(() => this.setPageRecords());
         }
     }
 
     handleChange = (e) => {
-        this.setState({ [e.target.name]: e.target.value });
-        if (e.target.type === "select-one") {
-            this.handleFlightSearch();
-        }
+        const type = e.target.type;
+        this.setState({ [e.target.name]: e.target.value }, () => {
+            if (type === "select-one") {
+                this.handleFlightSearch();
+            }
+        })
+    }
+
+    setPageRecords = () => {
+        const { pageSize, flights } = this.props.flightState;
+        const pageRecords = flights.length > pageSize ? flights.slice(0, pageSize) : flights;
+        if (pageRecords.length > 0)
+            this.props.dispatch(Actions.setPageRecords(pageRecords));
     }
 
     render() {
@@ -139,6 +151,7 @@ class FlightSearchImp extends React.Component {
                             onChange={this.handleChange}
                             inputProps={{ id: 'classType', name: 'classType' }}
                         >
+                            <option aria-label="None" value="" />
                             <option value="Economy">Economy</option>
                             <option value="Business">Business</option>
                         </Select>
@@ -158,16 +171,6 @@ const mapStateToProps = state => ({
     flightState: state.flightState
 });
 
-const mapDispatchToProps = dispatch => ({
-    setPageIndex: pageIndex => dispatch(Actions.setPageIndex(pageIndex)),
-    resetFlights: () => dispatch(Actions.resetFlights()),
-    setPageRecords: pageRecords => dispatch(Actions.setPageRecords(pageRecords)),
-    fetchEconomyFlightAsyn: (departure, arrival, departureTime, arrivalTime, pageSize) =>
-        dispatch(Actions.fetchEconomyFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize)),
-    fetchBusinessFlightAsyn: (departure, arrival, departureTime, arrivalTime, pageSize) =>
-        dispatch(Actions.fetchBusinessFlightAsyn(departure, arrival, departureTime, arrivalTime, pageSize))
-});
-
 export const FlightSearch = connect(
-    mapStateToProps, mapDispatchToProps
+    mapStateToProps
 )(withStyles(styles)(FlightSearchImp));
