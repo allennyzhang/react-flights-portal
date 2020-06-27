@@ -71,6 +71,10 @@ class FlightSearchImp extends React.Component {
             this.props.dispatch(Actions.setPageRecords(pageRecords));
     }
 
+    componentWillUnmount() {
+        this.props.dispatch(Actions.resetFlights());
+    }
+
     render() {
         const { classes } = this.props;
         return (
